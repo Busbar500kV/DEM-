@@ -54,6 +54,15 @@ Rendered map:
 
 This map clearly delineates Sri Lanka’s central highlands from lowland plains and the surrounding ocean.
 
+## Elevation Bands and Land Area
+
+![Sri Lanka 6-Class Elevation Map](figs/srilanka_elev_6classes_towns.png)
+
+The table below shows the land area above 3000, 4000, 5000, and 6000 ft
+derived from the Copernicus 30 m DEM:
+
+$(cat results/area_above_3000_4000_5000_6000ft.md)$
+
 ---
 
 ## Repository Structure
@@ -123,6 +132,8 @@ Expected output:
 Area above 5000 ft: 751.34 km²
 Percent of Sri Lanka: 1.145 %
 ```
+
+
 
 ---
 
