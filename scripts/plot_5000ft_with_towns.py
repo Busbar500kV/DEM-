@@ -1,15 +1,13 @@
 import rasterio
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
 from pyproj import Transformer
 
 DEM_UTM = "data/dem/srilanka_dem_utm.tif"
-FIG_OUT = "figs/above_5000ft_with_towns.png"
+FIG_OUT = "figs/above_5000ft_with_towns_zoomed.png"
 THRESH_M = 1524.0  # 5000 ft in metres
 
-# Towns/villages near or above 5000 ft
-# (lat, lon) in degrees, WGS84
+# Towns (lat, lon)
 towns = [
     ("Nuwara Eliya", 6.97078, 80.78286),
     ("Pattipola",    6.85570, 80.83070),
@@ -17,55 +15,60 @@ towns = [
     ("Ambewela",     6.87866, 80.81382),
 ]
 
-# Load DEM in UTM 44N
 with rasterio.open(DEM_UTM) as src:
     dem = src.read(1)
-    bounds = src.bounds
+    transform = src.transform
 
-# Mask for > 5000 ft and positive elevation (avoid ocean)
+# High-elevation mask
 high = (dem >= THRESH_M) & (dem > 0)
 
-extent = [bounds.left, bounds.right, bounds.bottom, bounds.top]
+# --- AUTO ZOOM TO RED ZONE ---
+rows, cols = np.where(high)
+rmin, rmax = rows.min(), rows.max()
+cmin, cmax = cols.min(), cols.max()
 
-# Simple 2-color colormap: transparent for non-high, red for high
-cmap = ListedColormap(["none", "#e74c3c"])
+# Expand bounds slightly for visual margin
+pad = 50
+rmin = max(0, rmin - pad)
+rmax = min(dem.shape[0], rmax + pad)
+cmin = max(0, cmin - pad)
+cmax = min(dem.shape[1], cmax + pad)
 
-# Prepare high mask as 0/1
-high_int = np.zeros_like(dem, dtype=np.uint8)
-high_int[high] = 1
+high_zoom = high[rmin:rmax, cmin:cmax]
 
-# Transform town coordinates from lon/lat (EPSG:4326) to UTM 44N (EPSG:32644)
+# Convert pixel bounds to real UTM coordinates
+x_min, y_max = rasterio.transform.xy(transform, rmin, cmin)
+x_max, y_min = rasterio.transform.xy(transform, rmax, cmax)
+
+extent = [x_min, x_max, y_min, y_max]
+
+# Coordinate transform for towns
 transformer = Transformer.from_crs("EPSG:4326", "EPSG:32644", always_xy=True)
-
 lons = [lon for (_, lat, lon) in towns]
 lats = [lat for (_, lat, lon) in towns]
 xs, ys = transformer.transform(lons, lats)
 
-plt.figure(figsize=(8, 10))
+# Plot
+plt.figure(figsize=(9, 10))
+plt.imshow(high_zoom, extent=extent, origin="upper", cmap="Reds")
 
-# Draw high-elevation mask
-plt.imshow(high_int, origin="upper", extent=extent, cmap=cmap)
+plt.scatter(xs, ys, c="white", edgecolor="black", s=50, zorder=3)
 
-# Plot town locations
-plt.scatter(xs, ys, marker="o", s=40, facecolor="white", edgecolor="black", zorder=3)
-
-# Labels slightly offset
 for (name, lat, lon), x, y in zip(towns, xs, ys):
     plt.text(
-        x + 2000, y + 2000,  # offset in metres
+        x + 1200, y + 1200,
         name,
-        fontsize=8,
+        fontsize=9,
         color="black",
-        bbox=dict(facecolor="white", alpha=0.7, edgecolor="none", pad=1.5),
-        zorder=4,
+        bbox=dict(facecolor="white", alpha=0.75, edgecolor="none"),
+        zorder=4
     )
 
-plt.title("Sri Lanka – Terrain Above 5000 ft (1524 m)\nwith Selected Highland Towns and Villages")
-plt.xlabel("Easting (m, UTM Zone 44N)")
-plt.ylabel("Northing (m, UTM Zone 44N)")
-
+plt.title("Sri Lanka – Terrain Above 5000 ft (1524 m)\nZoomed with Highland Towns")
+plt.xlabel("Easting (m, UTM 44N)")
+plt.ylabel("Northing (m, UTM 44N)")
 plt.tight_layout()
 plt.savefig(FIG_OUT, dpi=300)
 plt.close()
 
-print(f"Saved map with towns to {FIG_OUT}")
+print(f"Saved zoomed map to {FIG_OUT}")
