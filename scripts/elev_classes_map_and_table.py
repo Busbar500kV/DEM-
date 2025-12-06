@@ -15,7 +15,7 @@ It also prints & saves a markdown table with the land area
 (and % of land) above 3000, 4000, 5000 and 6000 ft.
 
 Assumes that:
-    data/dem/srilanka_dem_utm44n.tif
+    data/dem/srilanka_dem_utm.tif
 already exists (created from your Copernicus DEM).
 """
 
@@ -32,7 +32,7 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 # Paths
 # ---------------------------------------------------------------------------
 
-DEM_UTM_PATH = Path("data/dem/srilanka_dem_utm44n.tif")
+DEM_UTM_PATH = Path("data/dem/srilanka_dem_utm.tif")
 OUT_FIG = Path("figs/srilanka_elev_6classes_towns.png")
 OUT_TABLE = Path("results/area_above_3000_4000_5000_6000ft.md")
 
