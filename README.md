@@ -54,15 +54,34 @@ Rendered map:
 
 This map clearly delineates Sri Lanka’s central highlands from lowland plains and the surrounding ocean.
 
-## Elevation Bands and Land Area
+## Elevation Band Analysis of Sri Lanka (from 30 m DEM)
 
-![Sri Lanka 6-Class Elevation Map](figs/srilanka_elev_6classes_towns.png)
+The following land-area statistics were derived from the Copernicus 30 m Digital Elevation Model (DEM), reprojected to UTM Zone 44N and integrated using true pixel areas. A strict land mask (elevation > 0 m) was applied.
 
-The table below shows the land area above 3000, 4000, 5000, and 6000 ft
-derived from the Copernicus 30 m DEM:
+**Total land area from DEM (> 0 m): 65,927.38 km²**  
+(Official land area ≈ 65,610 km² → error ≈ +0.48%)
 
-$(cat results/area_above_3000_4000_5000_6000ft.md)$
+### Land Area Above Key Elevation Thresholds
 
+| Elevation Threshold | Threshold (m) | Area ≥ Threshold (km²) | % of Sri Lanka |
+|--------------------:|--------------:|------------------------:|---------------:|
+| ≥ 3000 ft | 914.4  | 3055.66 | 4.635 % |
+| ≥ 4000 ft | 1219.2 | 1717.30 | 2.605 % |
+| ≥ 5000 ft | 1524.0 | 751.34  | 1.140 % |
+| ≥ 6000 ft | 1828.8 | 305.98  | 0.464 % |
+
+### Interpretation
+
+- Only **~4.6%** of Sri Lanka lies above **3000 ft**, marking the transition into the central highlands.
+- Just **~2.6%** of the country is above **4000 ft**, corresponding to the core upland plateau.
+- The true high-montane zone above **5000 ft** occupies only **~1.14%** of national land area.
+- The alpine and cloud-forest core above **6000 ft** is extremely limited, at only **~0.46%** of Sri Lanka.
+
+These results quantitatively confirm that Sri Lanka’s high-elevation terrain is geographically rare and highly concentrated within the Central Highlands and Knuckles massif.
+
+### Elevation Classification Map
+
+![Sri Lanka Elevation Classes](figs/srilanka_elev_6classes_towns.png)
 ---
 
 ## Repository Structure
